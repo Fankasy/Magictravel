@@ -1,0 +1,38 @@
+<ul class="posts">
+    {% for viewguide in viewguides %}
+    <li class="post">
+        <div class="post-thumbnail">
+            <a href="{{ url_for('.user', username=viewguide.author.username) }}">
+                <img class="img-rounded profile-thumbnail" src="{{ viewguide.author.gravatar(size=60) }}">
+            </a>
+        </div>
+        <div class="post-content">
+            <div class="post-date">{{ moment(viewguide.timestamp).fromNow() }}</div>
+            <div class="post-author"><a href="{{ url_for('.user', username=viewguide.author.username) }}">{{ viewguide.author.username }}</a></div>
+            <div class="post-author"><a href="{{ url_for('.view', name=viewguide.view.name) }}">{{ viewguide.view.name }}</a></div>
+            <div class="post-body">
+                {% if viewguide.body_html %}
+                    {{ viewguide.body_html | safe }}
+                {% else %}
+                    {{ viewguide.body }}
+                {% endif %}
+            </div>
+            <div class="post-footer">
+                {% if current_user == viewguide.author %}
+                <a href="{{ url_for('.edit', id=viewguide.id) }}">
+                    <span class="label label-primary">编辑</span>
+                </a>
+                {% elif current_user.is_administrator() %}
+                <a href="{{ url_for('.edit', id=viewguide.id) }}">
+                    <span class="label label-danger">编辑[管理员]</span>
+                </a>
+                {% endif %}
+
+                <a href="{{ url_for('.viewguide', id=viewguide.id) }}#comments">
+                    <span class="label label-primary">{{ viewguide.comments.count() }} 评论</span>
+                </a>
+            </div>
+        </div>
+    </li>
+    {% endfor %}
+</ul>
